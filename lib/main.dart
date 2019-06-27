@@ -6,7 +6,11 @@ import 'dart:convert';
 const request = 'https://api.hgbrasil.com/finance?format=json&key=5652f7fc';
 
 void main() async {
-  runApp(MaterialApp(home: Home()));
+  runApp(MaterialApp(home: Home(),
+  theme: ThemeData(
+    hintColor: Color(0xfffcd734),
+    primaryColor: Colors.black
+  ),));
 }
 
 class Home extends StatefulWidget {
@@ -25,7 +29,7 @@ class _HomeState extends State<Home> {
         appBar: AppBar(
           title: Text(
             '\$ Conversor de Moedas \$',
-            style: TextStyle(color: Colors.black),
+//            style: TextStyle(color: Colors.black),
           ),
           backgroundColor: Color(0xfffcd734),
           centerTitle: true,
@@ -64,11 +68,43 @@ class _HomeState extends State<Home> {
                           TextField(
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                                labelText: 'Reais (R\$)',
-                                helperText: 'Insira o Valor em Reais (R\$)',
+                                labelText: 'Real (R\$)',
+                                helperText: 'Insira o Valor em Real (R\$)',
                                 border: OutlineInputBorder(),
                                 prefixText: 'R\$ '),
-                            style: TextStyle(fontSize: 20, color: Colors.black),
+                            style: TextStyle(fontSize: 20),
+//                            controller: weightController,
+//                            validator: (value) {
+//                              if (value.isEmpty) {
+//                                return 'Insira o Peso (kg)';
+//                              }
+//                            },
+                          ),
+                          Divider(),
+                          TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                                labelText: 'Dólar (R\$)',
+                                helperText: 'Insira o Valor em Dólar (US\$)',
+                                border: OutlineInputBorder(),
+                                prefixText: 'US\$ '),
+                            style: TextStyle(fontSize: 20),
+//                            controller: weightController,
+//                            validator: (value) {
+//                              if (value.isEmpty) {
+//                                return 'Insira o Peso (kg)';
+//                              }
+//                            },
+                          ),
+                          Divider(),
+                          TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                                labelText: 'Euro (R\$)',
+                                helperText: 'Insira o Valor em Euro (€)',
+                                border: OutlineInputBorder(),
+                                prefixText: '€ '),
+                            style: TextStyle(fontSize: 20),
 //                            controller: weightController,
 //                            validator: (value) {
 //                              if (value.isEmpty) {
