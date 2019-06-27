@@ -6,11 +6,10 @@ import 'dart:convert';
 const request = 'https://api.hgbrasil.com/finance?format=json&key=5652f7fc';
 
 void main() async {
-  runApp(MaterialApp(home: Home(),
-  theme: ThemeData(
-    hintColor: Color(0xfffcd734),
-    primaryColor: Colors.black
-  ),));
+  runApp(MaterialApp(
+    home: Home(),
+    theme: ThemeData(hintColor: Colors.black, primaryColor: Color(0xffe0e0e0)),
+  ));
 }
 
 class Home extends StatefulWidget {
@@ -19,13 +18,55 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final realController = TextEditingController();
+  final dolarController = TextEditingController();
+  final euroController = TextEditingController();
+
   double dolar;
   double euro;
+
+  void _realChanged(String text) {
+    if(text.isEmpty) {
+      _clearAll();
+      return;
+    }
+
+    double real = double.parse(text);
+    dolarController.text = (real/dolar).toStringAsFixed(2);
+    euroController.text = (real/euro).toStringAsFixed(2);
+  }
+
+  void _dolarChanged(String text) {
+    if(text.isEmpty) {
+      _clearAll();
+      return;
+    }
+
+    double dolar = double.parse(text);
+    realController.text = (dolar * this.dolar).toStringAsFixed(2);
+    euroController.text = (dolar * this.dolar / euro).toStringAsFixed(2);
+  }
+
+  void _euroChanged(String text) {
+    if(text.isEmpty) {
+      _clearAll();
+      return;
+    }
+
+    double euro = double.parse(text);
+    realController.text = (euro * this.euro).toStringAsFixed(2);
+    euroController.text = (euro * this.euro / dolar).toStringAsFixed(2);
+  }
+
+  void _clearAll() {
+    realController.text = '';
+    dolarController.text = '';
+    euroController.text = '';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        //backgroundColor: Color(0xffffff6b),
         appBar: AppBar(
           title: Text(
             '\$ Conversor de Moedas \$',
@@ -40,20 +81,10 @@ class _HomeState extends State<Home> {
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
-                  return Center(
-                      child: Text(
-                    'Carregando Dados...',
-                    style: TextStyle(fontSize: 25),
-                    textAlign: TextAlign.center,
-                  ));
+                  return buildMessage('Carregando Dados...');
                 default:
                   if (snapshot.hasError) {
-                    return Center(
-                        child: Text(
-                      'Erro ao Carregar Dados...',
-                      style: TextStyle(fontSize: 25),
-                      textAlign: TextAlign.center,
-                    ));
+                    return buildMessage('Erro ao Carregar Dados...');
                   } else {
                     dolar =
                         snapshot.data['results']['currencies']['USD']['buy'];
@@ -65,53 +96,23 @@ class _HomeState extends State<Home> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
                           Icon(Icons.attach_money, size: 100),
-                          TextField(
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                labelText: 'Real (R\$)',
-                                helperText: 'Insira o Valor em Real (R\$)',
-                                border: OutlineInputBorder(),
-                                prefixText: 'R\$ '),
-                            style: TextStyle(fontSize: 20),
-//                            controller: weightController,
-//                            validator: (value) {
-//                              if (value.isEmpty) {
-//                                return 'Insira o Peso (kg)';
-//                              }
-//                            },
-                          ),
+                          buildTextField(
+                              'Real (R\$)',
+                              'Insira o Valor em Real (R\$)',
+                              'R\$ ',
+                              realController, _realChanged),
                           Divider(),
-                          TextField(
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                labelText: 'Dólar (R\$)',
-                                helperText: 'Insira o Valor em Dólar (US\$)',
-                                border: OutlineInputBorder(),
-                                prefixText: 'US\$ '),
-                            style: TextStyle(fontSize: 20),
-//                            controller: weightController,
-//                            validator: (value) {
-//                              if (value.isEmpty) {
-//                                return 'Insira o Peso (kg)';
-//                              }
-//                            },
-                          ),
+                          buildTextField(
+                              'Dólar (US\$)',
+                              'Insira o Valor em Dólar (US\$)',
+                              'US\$ ',
+                              dolarController, _dolarChanged),
                           Divider(),
-                          TextField(
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                labelText: 'Euro (R\$)',
-                                helperText: 'Insira o Valor em Euro (€)',
-                                border: OutlineInputBorder(),
-                                prefixText: '€ '),
-                            style: TextStyle(fontSize: 20),
-//                            controller: weightController,
-//                            validator: (value) {
-//                              if (value.isEmpty) {
-//                                return 'Insira o Peso (kg)';
-//                              }
-//                            },
-                          )
+                          buildTextField(
+                              'Euro (R\$)',
+                              'Insira o Valor em Euro (€)',
+                              '€ ',
+                              euroController, _euroChanged)
                         ],
                       ),
                     );
@@ -125,4 +126,28 @@ Future<Map> getData() async {
   http.Response response = await http.get(request);
 
   return json.decode(response.body);
+}
+
+Widget buildTextField(String label, String helper, String prefix,
+    TextEditingController controller, Function function) {
+  return TextField(
+    keyboardType: TextInputType.numberWithOptions(decimal: true),
+    decoration: InputDecoration(
+        labelText: label,
+        helperText: helper,
+        border: OutlineInputBorder(),
+        prefixText: prefix),
+    style: TextStyle(fontSize: 20),
+    controller: controller,
+    onChanged: function,
+  );
+}
+
+Widget buildMessage(final String message) {
+  return Center(
+      child: Text(
+    message,
+    style: TextStyle(fontSize: 25),
+    textAlign: TextAlign.center,
+  ));
 }
