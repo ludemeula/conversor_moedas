@@ -72,7 +72,7 @@ class _HomeState extends State<Home> {
             '\$ Conversor de Moedas \$',
 //            style: TextStyle(color: Colors.black),
           ),
-          backgroundColor: Color(0xfffcd734),
+          backgroundColor: Color(0xffffca28),
           centerTitle: true,
         ),
         body: FutureBuilder<Map>(
